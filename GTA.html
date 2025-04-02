@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 	
 	<script type="text/javascript">
     (function(c,l,a,r,i,t,y){
@@ -930,6 +931,101 @@
         .reaction-limit-message.show {
             opacity: 1;
         }
+
+        /* Robot Verification Overlay */
+        #robot-verification-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 999999;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            color: var(--text);
+        }
+
+        #robot-verification-overlay.active {
+            display: flex;
+        }
+
+        .verification-content {
+            max-width: 500px;
+            background: var(--nav-bg);
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            width: 100%;
+        }
+
+        .verification-content h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .verification-content p {
+            margin-bottom: 25px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .verification-icon {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .verification-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .verification-btn {
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .verify-btn {
+            background: var(--accent);
+            color: white;
+        }
+
+        .verify-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .cancel-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .cancel-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
@@ -943,6 +1039,26 @@
             <p>To continue using our services, please disable your ad blocker. Our service is funded by advertisements and we cannot operate without this revenue.</p>
             <p>Please disable your ad blocker and refresh the page to continue.</p>
             <button class="adblock-btn" onclick="window.location.reload()">Refresh Page</button>
+        </div>
+    </div>
+
+    <!-- Robot Verification Overlay -->
+    <div id="robot-verification-overlay">
+        <div class="verification-content">
+            <div class="verification-icon">
+                <i class="fas fa-robot"></i>
+            </div>
+            <h2>Verify You're Human</h2>
+            <p>Please complete the CAPTCHA verification to continue with your download.</p>
+            <div class="g-recaptcha" data-sitekey="6LeYAQcrAAAAAKCck5GsXU1MImk3UEaOU-HjudB_"></div>
+            <div class="verification-buttons">
+                <button class="verification-btn verify-btn" onclick="verifyCaptcha()">
+                    <i class="fas fa-check"></i> Verify
+                </button>
+                <button class="verification-btn cancel-btn" onclick="cancelVerification()">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
         </div>
     </div>
 
@@ -1086,6 +1202,79 @@
     </footer>
 
     <script>
+        // Robot Verification System
+        const robotVerification = {
+            overlay: document.getElementById('robot-verification-overlay'),
+            downloadUrl: 'https://scwz.me/ZKi8FU',
+            isActive: false,
+            
+            init() {
+                // Prevent right-click in overlay
+                this.overlay.addEventListener('contextmenu', e => {
+                    e.preventDefault();
+                    return false;
+                });
+                
+                // Disable keyboard shortcuts for dev tools
+                document.addEventListener('keydown', e => {
+                    if (this.isActive) {
+                        if (e.key === 'F12' || 
+                            (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+                            (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+                            (e.ctrlKey && e.shiftKey && e.key === 'C') ||
+                            (e.ctrlKey && e.key === 'U')) {
+                            e.preventDefault();
+                            return false;
+                        }
+                    }
+                });
+            },
+            
+            show() {
+                this.overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                document.documentElement.style.overflow = 'hidden';
+                this.isActive = true;
+                // Reset CAPTCHA when showing overlay
+                grecaptcha.reset();
+            },
+            
+            hide() {
+                this.overlay.classList.remove('active');
+                document.body.style.overflow = '';
+                document.documentElement.style.overflow = '';
+                this.isActive = false;
+                // Reset CAPTCHA when hiding overlay
+                grecaptcha.reset();
+            }
+        };
+
+        // Initialize verification system
+        robotVerification.init();
+
+        // Function to verify CAPTCHA
+        function verifyCaptcha() {
+            const response = grecaptcha.getResponse();
+            if (response) {
+                // Here you would typically verify the response with your server
+                // For this example, we'll just redirect to the download URL
+                window.location.href = robotVerification.downloadUrl;
+            } else {
+                alert('Please complete the CAPTCHA verification first.');
+            }
+        }
+
+        // Function to cancel verification
+        function cancelVerification() {
+            robotVerification.hide();
+        }
+
+        // Modify the download button click handler
+        document.querySelector('.download-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            robotVerification.show();
+        });
+
         // WebSocket connection for real-time updates
         const ws = new WebSocket('wss://your-websocket-server.com');
         
