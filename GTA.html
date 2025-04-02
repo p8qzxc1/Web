@@ -9,7 +9,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 	
 	<script type="text/javascript">
     (function(c,l,a,r,i,t,y){
@@ -932,8 +931,8 @@
             opacity: 1;
         }
 
-        /* Robot Verification Overlay */
-        #robot-verification-overlay {
+        /* Discord Verification Overlay */
+        #discord-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -952,11 +951,11 @@
             color: var(--text);
         }
 
-        #robot-verification-overlay.active {
+        #discord-overlay.active {
             display: flex;
         }
 
-        .verification-content {
+        .discord-content {
             max-width: 500px;
             background: var(--nav-bg);
             padding: 40px;
@@ -967,52 +966,41 @@
             width: 100%;
         }
 
-        .verification-content h2 {
+        .discord-content h2 {
             font-size: 2rem;
             margin-bottom: 20px;
-            color: var(--accent);
+            color: #5865F2;
         }
 
-        .verification-content p {
+        .discord-content p {
             margin-bottom: 25px;
             line-height: 1.6;
             color: var(--text-secondary);
         }
 
-        .verification-icon {
+        .discord-icon {
             font-size: 3rem;
-            color: var(--accent);
+            color: #5865F2;
             margin-bottom: 20px;
         }
 
-        .verification-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 30px;
-        }
-
-        .verification-btn {
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            font-size: 1rem;
-            display: flex;
+        .discord-btn {
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-        }
-
-        .verify-btn {
-            background: var(--accent);
+            background: #5865F2;
             color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
         }
 
-        .verify-btn:hover {
-            background: var(--accent-hover);
+        .discord-btn:hover {
+            background: #4752C4;
             transform: translateY(-2px);
         }
 
@@ -1020,6 +1008,15 @@
             background: rgba(255, 255, 255, 0.1);
             color: var(--text);
             border: 1px solid var(--border);
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .cancel-btn:hover {
@@ -1042,23 +1039,20 @@
         </div>
     </div>
 
-    <!-- Robot Verification Overlay -->
-    <div id="robot-verification-overlay">
-        <div class="verification-content">
-            <div class="verification-icon">
-                <i class="fas fa-robot"></i>
+    <!-- Discord Verification Overlay -->
+    <div id="discord-overlay">
+        <div class="discord-content">
+            <div class="discord-icon">
+                <i class="fab fa-discord"></i>
             </div>
-            <h2>Verify You're Human</h2>
-            <p>Please complete the CAPTCHA verification to continue with your download.</p>
-            <div class="g-recaptcha" data-sitekey="6LeYAQcrAAAAAKCck5GsXU1MImk3UEaOU-HjudB_"></div>
-            <div class="verification-buttons">
-                <button class="verification-btn verify-btn" onclick="verifyCaptcha()">
-                    <i class="fas fa-check"></i> Verify
-                </button>
-                <button class="verification-btn cancel-btn" onclick="cancelVerification()">
-                    <i class="fas fa-times"></i> Cancel
-                </button>
-            </div>
+            <h2>Join Our Discord</h2>
+            <p>To access the download, please join our Discord server first.</p>
+            <a href="https://discord.gg/GyW9vypS" target="_blank" class="discord-btn">
+                <i class="fab fa-discord"></i> Join Discord
+            </a>
+            <button class="cancel-btn" onclick="closeDiscordOverlay()">
+                <i class="fas fa-times"></i> Cancel
+            </button>
         </div>
     </div>
 
@@ -1202,9 +1196,9 @@
     </footer>
 
     <script>
-        // Robot Verification System
-        const robotVerification = {
-            overlay: document.getElementById('robot-verification-overlay'),
+        // Discord Verification System
+        const discordVerification = {
+            overlay: document.getElementById('discord-overlay'),
             downloadUrl: 'https://scwz.me/ZKi8FU',
             isActive: false,
             
@@ -1235,8 +1229,6 @@
                 document.body.style.overflow = 'hidden';
                 document.documentElement.style.overflow = 'hidden';
                 this.isActive = true;
-                // Reset CAPTCHA when showing overlay
-                grecaptcha.reset();
             },
             
             hide() {
@@ -1244,35 +1236,21 @@
                 document.body.style.overflow = '';
                 document.documentElement.style.overflow = '';
                 this.isActive = false;
-                // Reset CAPTCHA when hiding overlay
-                grecaptcha.reset();
             }
         };
 
         // Initialize verification system
-        robotVerification.init();
+        discordVerification.init();
 
-        // Function to verify CAPTCHA
-        function verifyCaptcha() {
-            const response = grecaptcha.getResponse();
-            if (response) {
-                // Here you would typically verify the response with your server
-                // For this example, we'll just redirect to the download URL
-                window.location.href = robotVerification.downloadUrl;
-            } else {
-                alert('Please complete the CAPTCHA verification first.');
-            }
-        }
-
-        // Function to cancel verification
-        function cancelVerification() {
-            robotVerification.hide();
+        // Function to close Discord overlay
+        function closeDiscordOverlay() {
+            discordVerification.hide();
         }
 
         // Modify the download button click handler
         document.querySelector('.download-btn').addEventListener('click', function(e) {
             e.preventDefault();
-            robotVerification.show();
+            discordVerification.show();
         });
 
         // WebSocket connection for real-time updates
@@ -1578,5 +1556,5 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'929c291bcc68ff0d',t:'MTc0MzU1MzIyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
