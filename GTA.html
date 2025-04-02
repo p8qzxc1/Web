@@ -378,6 +378,19 @@
             justify-content: center;
         }
 
+        .mod-image::before {
+            content: '\f03e';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 3rem;
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+
+        .mod-image[style*="background-image"]::before {
+            display: none;
+        }
+
         .mod-status {
             position: absolute;
             top: 15px;
@@ -979,7 +992,7 @@
         <div class="mods-container">
             <!-- Yim Menu + OP Folder Card -->
             <div class="mod-card">
-                <div class="mod-image" style="background-image: url('images/TessioScript.png');">
+                <div class="mod-image">
                     <!-- Status badge removed from here as it's now in the actions -->
                 </div>
                 <div class="mod-content">
