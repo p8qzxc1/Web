@@ -92,29 +92,20 @@
     </div>
 
     <script>
-        function sendNotification() {
-            const message = document.getElementById('message').value;
-            if (!message) {
-                showStatus('Por favor, escribe un mensaje', 'error');
-                return;
-            }
-
-            // Enviar mensaje a la aplicación WPF
-            window.external.ShowNotification(message);
-            showStatus('Notificación enviada correctamente', 'success');
-            document.getElementById('message').value = '';
-        }
-
-        function showStatus(message, type) {
-            const status = document.getElementById('status');
-            status.textContent = message;
-            status.className = 'status ' + type;
-            status.style.display = 'block';
-            
-            setTimeout(() => {
-                status.style.display = 'none';
-            }, 3000);
-        }
+function sendNotification() {
+    var message = document.getElementById('message').value;
+    if (!message) {
+        showStatus('Por favor, escribe un mensaje', 'error');
+        return;
+    }
+    if (window.chrome && window.chrome.webview) {
+        window.chrome.webview.postMessage(message);
+        showStatus('Notificación enviada correctamente', 'success');
+        document.getElementById('message').value = '';
+    } else {
+        showStatus('No se puede comunicar con la app', 'error');
+    }
+}
     </script>
 </body>
 </html> 
